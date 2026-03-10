@@ -1,0 +1,48 @@
+# ===============================
+# Unity .gitignore
+# ===============================
+
+# Unity
+[Ll]ibrary
+[Tt]emp
+[Oo]bj
+[Bb]uild
+[Bb]uilds
+[Ll]ogs
+[Uu]ser[Ss]ettings
+
+# IDE
+.idea
+.vs
+.vscode
+.csproj
+.sln
+.suo
+.tmp
+.user
+.userprefs
+.pidb
+.booproj
+.svd
+.pdb
+.mdb
+.opendb
+.VC.db
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Unity 
+MemoryCaptures
+[Aa]ssetsAssetStoreTools
+.apk
+.aab
+.unitypackage
+.app
+
+# Crashlytics
+crashlytics-build.properties
+
+# meta
+!.meta

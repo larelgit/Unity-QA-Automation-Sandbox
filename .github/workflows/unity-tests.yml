@@ -1,0 +1,98 @@
+name: Unity Tests 🎮
+
+# Когда запускать
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  # Возможность запустить вручную
+  workflow_dispatch:
+
+env:
+  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+  PROJECT_PATH: .
+
+jobs:
+  # =====================================================
+  #  JOB 1: Запуск тестов
+  # =====================================================
+  test:
+    name: Run Tests ✅
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        testMode:
+          - playmode
+          - editmode
+
+    steps:
+      # --- Шаг 1: Клонируем репозиторий ---
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      # --- Шаг 2: Кеширование Library (ускоряет сборку) ---
+      - name: Cache Unity Library
+        uses: actions/cache@v3
+        with:
+          path: Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/manifest.json', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-
+
+      # --- Шаг 3: Запуск тестов ---
+      - name: Run ${{ matrix.testMode }} tests
+        uses: game-ci/unity-test-runner@v4
+        id: tests
+        with:
+          projectPath: ${{ env.PROJECT_PATH }}
+          testMode: ${{ matrix.testMode }}
+          artifactsPath: TestResults/${{ matrix.testMode }}
+          # Указываем версию Unity (должна совпадать с проектом!)
+          unityVersion: 2022.3.20f1
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          checkName: "${{ matrix.testMode }} Test Results"
+
+      # --- Шаг 4: Загрузка результатов как артефакт ---
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Test Results (${{ matrix.testMode }})
+          path: ${{ steps.tests.outputs.artifactsPath }}
+          retention-days: 14
+
+  # =====================================================
+  #  JOB 2: Публикация результатов
+  # =====================================================
+  report:
+    name: Publish Report 📊
+    runs-on: ubuntu-latest
+    needs: test
+    if: always()
+
+    steps:
+      - name: Download all test results
+        uses: actions/download-artifact@v4
+        with:
+          path: TestResults
+
+      - name: Report summary
+        run: |
+          echo "## 🎮 Unity Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Mode | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
+          if [ -d "TestResults/Test Results (editmode)" ]; then
+            echo "| EditMode | ✅ Completed |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| EditMode | ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [ -d "TestResults/Test Results (playmode)" ]; then
+            echo "| PlayMode | ✅ Completed |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| PlayMode | ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+          fi
