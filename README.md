@@ -9,10 +9,9 @@
 
 ## 📸 Demo
 
-![Test Runner Demo](docs/demo.gif)
+![Test Runner Demo](Showcase.gif)
 
-*Test Runner автоматически запускает игру, проверяет механики
-и выдаёт результат.*
+
 
 ## 🧪 What's Being Tested
 
