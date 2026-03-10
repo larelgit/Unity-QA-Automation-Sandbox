@@ -2,6 +2,7 @@
 
 ![Unity](https://img.shields.io/badge/Unity-2022.3%20LTS-black?logo=unity)
 ![Tests](https://img.shields.io/badge/Tests-15%20passed-brightgreen)
+[![CI](https://github.com/larelgit/Unity-QA-Automation-Sandbox/actions/workflows/unity-tests.yml/badge.svg)](https://github.com/larelgit/Unity-QA-Automation-Sandbox/actions)
 
 > Automated PlayMode & EditMode testing framework using Unity Test Runner,
 > NUnit, and C#. Demonstrates QA Automation principles in game development.
